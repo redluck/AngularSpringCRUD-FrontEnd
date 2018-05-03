@@ -1,13 +1,17 @@
 <h1>Angular 2 CRUD Operation</h1>
+
+<!-- ===========================================================================>
+< Form              	                                                        >
+< =========================================================================== -->
 <h3 *ngIf="articleIdToUpdate; else create">
 	Update Article for Id: {{articleIdToUpdate}}
 </h3>
 <ng-template #create>
-	<h3> Create New Article </h3>
+	<h3>Create New Article</h3>
 </ng-template>
 <div>
 	<form [formGroup]="articleForm" (ngSubmit)="onArticleFormSubmit()">
-		<table>
+		<table id="table_form">
 			<tr>
 				<td>Enter Title</td>
 				<td>
@@ -24,14 +28,18 @@
 			</tr>
 			<tr>
 				<td colspan="2">
-					<button *ngIf="!articleIdToUpdate">CREATE</button>
-					<button *ngIf="articleIdToUpdate">UPDATE</button>
+					<button *ngIf="!articleIdToUpdate">Create</button>
+					<button *ngIf="articleIdToUpdate">Update</button>
 					<button (click)="backToCreateArticle()" *ngIf="articleIdToUpdate">Go Back</button>
 				</td>
 			</tr>
 		</table>
 	</form>
 	<br/>
+
+	<!-- ===========================================================================>
+	< Messaggi di conferma	                                                        >
+	< =========================================================================== -->
 	<div *ngIf="statusCode; else processing">
 		<div *ngIf="statusCode === 201" [ngClass]="'success'">
 			Article added successfully.
@@ -53,10 +61,14 @@
 		<img *ngIf="requestProcessing" src="assets/images/loading.gif">
 	</ng-template>
 </div>
+
+<!-- ===========================================================================>
+< Lista degli articoli	                                                        >
+< =========================================================================== -->
 <h3>Article Details</h3>
-<table>
+<table id="table_list">
 	<tr>
-		<th> Id</th>
+		<th>Id</th>
 		<th>Title</th>
 		<th>Category</th>
 		<th></th>

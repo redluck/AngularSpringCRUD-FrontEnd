@@ -1,33 +1,61 @@
-h1 {
-    font-size: 2.0em;
-    margin: 20px 0 0 0;
-    font-weight: 400;   
-}
 h3 { 
    color: blue;
 }
-table {
-    border-collapse: collapse;
-}
-table, th, td {
-    border: 1px solid black;
-    font-size:17px;
-}
-input {
-    width: 225px;
-    margin: 8px 0;
-    background-color: #dfdfdf;
-    font-size:17px;
-}
-button {
-    background-color: #008CBA;
-    color: white;
-}
-.error{
+.error {
     color: red;
     font-size: 20px;
 }
-.success{
+.success {
     color: green;
     font-size: 20px;
-} 
+}
+
+/*--------------------------------------------------*
+| table_form                                        |
+*--------------------------------------------------*/
+#table_form {
+	border: 1px solid #000000;
+	border-radius: 5px;
+}
+#table_form td {
+	background: #F1F1F1;
+}
+#table_form tr td:first-child  {
+	text-align: end;
+	padding: 5px 5px 5px 10px;
+}
+input {
+    width: 225px;
+    margin: 5px;
+	border: 0px;
+}
+
+/*--------------------------------------------------*
+| table_list                                        |
+*--------------------------------------------------*/
+#table_list {
+	border: 1px solid #000000;
+	border-radius: 5px;
+}
+#table_list td {
+	border: 1px solid #000000;
+}
+#table_list td:first-child {
+	width: 50px;
+	text-align: right;
+	padding-right: 5px;
+}
+#table_list td:nth-child(2) {
+	width: 350px;
+	padding-left: 5px;
+}
+#table_list td:nth-child(3) {
+	width: 150px;
+	padding-left: 5px;
+}
+#table_list td:nth-child(4) {
+	border: 0px;
+}
+#table_list td:nth-child(5) {
+	border: 0px;
+}
