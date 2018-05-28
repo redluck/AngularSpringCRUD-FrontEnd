@@ -7,15 +7,18 @@ import { ArticleComponent } from './article.component';
 import { ArticleService } from './article.service';
 
 @NgModule({
+	//Elenco dei componenti di cui è composta l'applicazione
 	declarations: [
 		AppComponent,
 		ArticleComponent
 	],
+	//Lista di moduli esterni di cui ha bisogno l'applicazione
 	imports: [
 		BrowserModule,
 		HttpModule,
 		ReactiveFormsModule
 	],
+	//Servizi iniettabili all'interno di qualsiasi classe ne abbia bisogno (sono Singleton)
 	providers: [
 		ArticleService
 	],

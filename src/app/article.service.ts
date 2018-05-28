@@ -8,62 +8,93 @@ import { Article } from './article';
 @Injectable()
 export class ArticleService {
 
-	//URLs for CRUD operations
+	//URL per le operazioni CRUD
 	allArticlesUrl = "http://localhost:8080/user/all-articles";
 	articleUrl = "http://localhost:8080/user/article";
-	//Create constructor to get Http instance
+
+	/*===========================================================================*
+	| constructor()                                                              |
+	| Per ottenere un'istanza di Http                                            |
+	*===========================================================================*/
 	constructor(private http: Http) {
 	}
-	//Fetch all articles
+
+	/*===========================================================================*
+	| getAllArticles()                                                           |
+	*===========================================================================*/
 	getAllArticles(): Observable<Article[]> {
 		return this.http.get(this.allArticlesUrl)
-			.map(this.extractData)
-			.catch(this.handleError);
+			.map(response => response.json())
+			.catch(error => {
+				return Observable.throw(error)
+			});
+	}
 
-	}
-	//Create article
-	createArticle(article: Article): Observable<number> {
-		let cpHeaders = new Headers({ 'Content-Type': 'application/json' });
-		let options = new RequestOptions({ headers: cpHeaders });
-		return this.http.post(this.articleUrl, article, options)
-			.map(success => success.status)
-			.catch(this.handleError);
-	}
-	//Fetch article by id
+	/*===========================================================================*
+	| getArticleById()                                                           |
+	*===========================================================================*/
 	getArticleById(articleId: string): Observable<Article> {
-		let cpHeaders = new Headers({ 'Content-Type': 'application/json' });
-		let cpParams = new URLSearchParams();
-		cpParams.set('id', articleId);
-		let options = new RequestOptions({ headers: cpHeaders, params: cpParams });
+		//Secondo parametro "options?" da passare al metodo Http.get()
+		//(costituito da un Headers e da un URLSearchParam)
+		let myHeaders = new Headers({'Content-Type': 'application/json'});
+		let myParams = new URLSearchParams();
+		myParams.set('id', articleId);
+		let options = new RequestOptions({headers: myHeaders, params: myParams});
+		
 		return this.http.get(this.articleUrl, options)
-			.map(this.extractData)
-			.catch(this.handleError);
+			.map(response => response.json())
+			.catch(error => {
+				return Observable.throw(error)
+			});
 	}
-	//Update article
-	updateArticle(article: Article): Observable<number> {
-		let cpHeaders = new Headers({ 'Content-Type': 'application/json' });
-		let options = new RequestOptions({ headers: cpHeaders });
-		return this.http.put(this.articleUrl, article, options)
-			.map(success => success.status)
-			.catch(this.handleError);
-	}
-	//Delete article	
-	deleteArticleById(articleId: string): Observable<number> {
-		let cpHeaders = new Headers({ 'Content-Type': 'application/json' });
-		let cpParams = new URLSearchParams();
-		cpParams.set('id', articleId);
-		let options = new RequestOptions({ headers: cpHeaders, params: cpParams });
-		return this.http.delete(this.articleUrl, options)
-			.map(success => success.status)
-			.catch(this.handleError);
-	}
-	private extractData(res: Response) {
-		let body = res.json();
-		return body;
-	}
-	private handleError(error: Response | any) {
-		console.error(error.message || error);
-		return Observable.throw(error.status);
+	
+	/*===========================================================================*
+	| createArticle()                                                            |
+	*===========================================================================*/
+	createArticle(article: Article): Observable<number> {
+		//Terzo parametro "options?" da passare al metodo Http.post()
+		//(costituito da un Headers)
+		let myHeaders = new Headers({'Content-Type': 'application/json'});
+		let options = new RequestOptions({headers: myHeaders});
+		
+		return this.http.post(this.articleUrl, article, options)
+			.map(response => response.status)
+			.catch(error => {
+				return Observable.throw(error)
+			});
 	}
 
+	/*===========================================================================*
+	| updateArticle() [modificarne la logica]                                    |
+	*===========================================================================*/
+	updateArticle(article: Article): Observable<number> {
+		//Terzo parametro "options?" da passare al metodo Http.put()
+		//(costituito da un Headers)
+		let myHeaders = new Headers({'Content-Type': 'application/json'});
+		let options = new RequestOptions({headers: myHeaders});
+		
+		return this.http.put(this.articleUrl, article, options)
+			.map(response => response.status)
+			.catch(error => {
+				return Observable.throw(error)
+			});
+	}
+
+	/*===========================================================================*
+	| deleteArticleById()                                                        |
+	*===========================================================================*/
+	deleteArticleById(articleId: string): Observable<number> {
+		//Secondo parametro "options?" da passare al metodo Http.get()
+		//(costituito da un Headers e da un URLSearchParam)
+		let myHeaders = new Headers({'Content-Type': 'application/json'});
+		let myParams = new URLSearchParams();
+		myParams.set('id', articleId);
+		let options = new RequestOptions({headers: myHeaders, params: myParams});
+		
+		return this.http.delete(this.articleUrl, options)
+			.map(response => response.status)
+			.catch(error => {
+				return Observable.throw(error)
+			});
+	}
 }

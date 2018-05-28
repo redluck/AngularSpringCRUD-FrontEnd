@@ -4,5 +4,6 @@ import { Component } from '@angular/core';
 	selector: 'app-root',
 	template: `<app-article></app-article>`
 })
+//Classe di avvio dell'applicazione (main)
 export class AppComponent {
 }

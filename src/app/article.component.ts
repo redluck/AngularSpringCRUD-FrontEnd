@@ -10,76 +10,120 @@ import { Article } from './article';
 })
 export class ArticleComponent implements OnInit {
 
-	//Component properties
+	//Elenco di tutti i record
 	allArticles: Article[];
+	//Codice ritornato dall'operazione HTTP
 	statusCode: number;
+	//Flag di richiesta elaborazione in corso
 	requestProcessing = false;
+	//Id del record
 	articleIdToUpdate = null;
+	//Abbiamo richiesto un processo di validazione del form,
+	//ovvero abbiamo cliccato su uno dei tasti del form (update o create) 
+	//o sul tasto edit della lista (in quest'ultimo caso non dovrebbe essere necessario) 
 	processValidation = false;
-	//Create form
+	//Form
 	articleForm = new FormGroup({
 		title: new FormControl('', Validators.required),
 		category: new FormControl('', Validators.required)
 	});
-	//Create constructor to get service instance
+
+	/*===========================================================================*
+	| constructor()                                                              |
+	| Per ottenere un'istanza di ArticleService                                  |
+	*===========================================================================*/
 	constructor(private articleService: ArticleService) {
 	}
-	//Create ngOnInit() and and load articles
+
+	/*===========================================================================*
+	| ngOnInit()                                                                 |
+	*===========================================================================*/
 	ngOnInit(): void {
 		this.getAllArticles();
 	}
-	//Fetch all articles
+
+	/*===========================================================================*
+	| preProcessConfigurations()                                                 |
+	*===========================================================================*/
+	//Impostiamo le configurazioni prima di processare una richiesta
+	preProcessConfigurations() {
+		//Azzeriamo il codice ritornato dall'ultima operazione HTTP
+		this.statusCode = null;
+		//Impostiamo a true il flag di richiesta elaborazione in corso
+		this.requestProcessing = true;
+	}
+
+	/*===========================================================================*
+	| getAllArticles()                                                           |
+	*===========================================================================*/
 	getAllArticles() {
 		this.articleService.getAllArticles()
 			.subscribe(
 				data => this.allArticles = data,
 				errorCode => this.statusCode = errorCode);
 	}
-	//Handle create and update article
+
+	/*===========================================================================*
+	| loadArticleToEdit()                                                        |
+	*===========================================================================*/
+	loadArticleToEdit(articleId: string) {
+		this.preProcessConfigurations();
+		this.articleService.getArticleById(articleId)
+			.subscribe(
+				article => {
+					this.articleIdToUpdate = article.articleId;
+					//Riempiamo i campi del form
+					this.articleForm.setValue({title: article.title, category: article.category});
+					//Richiesta di validazione dei campi del form
+					//(non dovrebbe esserci bisogno in quanto sono già nel db)
+					//this.processValidation = true;
+					//La richiesta di elaborazione è terminata
+					this.requestProcessing = false;
+				},
+				errorCode => this.statusCode = errorCode);
+	}
+
+	/*===========================================================================*
+	| onArticleFormSubmit()                                                      |
+	*===========================================================================*/
 	onArticleFormSubmit() {
 		this.processValidation = true;
+		//Se il processo di validazione fallisce usciamo dal metodo
 		if (this.articleForm.invalid) {
-			return; //Validation failed, exit from method.
+			return;
 		}
-		//Form is valid, now perform create or update
+		//Altrimenti
 		this.preProcessConfigurations();
 		let title = this.articleForm.get('title').value.trim();
 		let category = this.articleForm.get('category').value.trim();
+		//Se l'articolo non esiste lo creiamo
 		if (this.articleIdToUpdate === null) {
-			//Handle create article
 			let article = new Article(null, title, category);
 			this.articleService.createArticle(article)
 				.subscribe(successCode => {
+					//Impostiamo un codice positivo ritornato dall'operazione HTTP
 					this.statusCode = successCode;
+					//Aggiorniamo la lista
 					this.getAllArticles();
+					//Torniamo alla homepage
 					this.backToCreateArticle();
-				},
-					errorCode => this.statusCode = errorCode);
-		} else {
-			//Handle update article
+				}, errorCode => this.statusCode = errorCode);
+		}
+		//Se l'articolo esiste lo modifichiamo
+		else {
 			let article = new Article(this.articleIdToUpdate, title, category);
 			this.articleService.updateArticle(article)
 				.subscribe(successCode => {
 					this.statusCode = successCode;
 					this.getAllArticles();
 					this.backToCreateArticle();
-				},
-					errorCode => this.statusCode = errorCode);
+				}, errorCode => this.statusCode = errorCode);
 		}
 	}
-	//Load article by id to edit
-	loadArticleToEdit(articleId: string) {
-		this.preProcessConfigurations();
-		this.articleService.getArticleById(articleId)
-			.subscribe(article => {
-				this.articleIdToUpdate = article.articleId;
-				this.articleForm.setValue({ title: article.title, category: article.category });
-				this.processValidation = true;
-				this.requestProcessing = false;
-			},
-				errorCode => this.statusCode = errorCode);
-	}
-	//Delete article
+
+	/*===========================================================================*
+	| deleteArticle()                                                            |
+	*===========================================================================*/
 	deleteArticle(articleId: string) {
 		this.preProcessConfigurations();
 		this.articleService.deleteArticleById(articleId)
@@ -87,19 +131,16 @@ export class ArticleComponent implements OnInit {
 				this.statusCode = successCode;
 				this.getAllArticles();
 				this.backToCreateArticle();
-			},
-				errorCode => this.statusCode = errorCode);
+			}, errorCode => this.statusCode = errorCode);
 	}
-	//Perform preliminary processing configurations
-	preProcessConfigurations() {
-		this.statusCode = null;
-		this.requestProcessing = true;
-	}
-	//Go back from update to create
+
+	/*===========================================================================*
+	| backToCreateArticle()                                                      |
+	*===========================================================================*/
+	//Torniamo all'homepage (reimpostiamo tutti i valori iniziali)
 	backToCreateArticle() {
 		this.articleIdToUpdate = null;
 		this.articleForm.reset();
 		this.processValidation = false;
 	}
-
 }
